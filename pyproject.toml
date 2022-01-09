@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "project_name"
-version = "0.1.0"
+name = "delivery_time"
+version = "0.0.1"
 description = ""
-authors = ["Łukasz Neumann <lukasz.neumann@pw.edu.pl>"]
+authors = ["Aleksander Garlikowski <aleksander.garlikowski.stud@pw.edu.pl>", "Cezary Moczulski <cezary.moczulski.stud@pw.edu.pl>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
