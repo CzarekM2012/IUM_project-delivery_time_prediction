@@ -1,32 +1,27 @@
 # -*- coding: utf-8 -*-
 import click
 import logging
-import pandas
 from pandas import DataFrame
 from pathlib import Path
-from os import pardir
-from os.path import dirname, join
+from os.path import join
 from json import loads
 from datetime import datetime
-from torch.nn.functional import one_hot
-from torch import tensor
-from collections import Counter
 
-project_dir = ''
+working_dir = ''
 
 @click.command()
-@click.argument('input_filepath', type=click.Path(exists=True))
-@click.argument('output_filepath', type=click.Path())
+@click.argument('input_filepath', type=click.Path(exists=True)) # a directory
+@click.argument('output_filepath', type=click.Path())           # a directory
 def main(input_filepath, output_filepath):
-    """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be analyzed (saved in ../processed).
+    """ Runs data processing scripts to turn raw data from (../../data/raw) into
+        cleaned data ready to be analyzed (saved in ../../data/processed).
     """
-    global project_dir
+    global working_dir
 
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
 
-    data_dir = join(project_dir, input_filepath)
+    data_dir = join(working_dir, input_filepath)
     #print(data_dir)
 
     data = join_data_files(join(data_dir, 'sessions.jsonl'),
@@ -64,7 +59,7 @@ def main(input_filepath, output_filepath):
     df = df[[c for c in df if c != 'delivery_time'] + ['delivery_time']] # Swap column order
 
     #print(df)
-    output_dir = join(project_dir, output_filepath, 'data.csv')
+    output_dir = join(working_dir, output_filepath, 'data.csv')
 
     with open(file=output_dir, mode='w', encoding='UTF-8', newline='') as file:
         file.write(df.to_csv(index=False))
@@ -163,5 +158,5 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format=log_fmt)
 
     # not used in this stub but often useful for finding various files
-    project_dir = Path(__file__).resolve().parents[2]
+    working_dir = Path(__file__).resolve().parents[2]
     main()
