@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import click
 import logging
-import csv
-import pandas as pd
+import pandas
 from pandas import DataFrame
 from pathlib import Path
 from os import pardir
 from os.path import dirname, join
 from json import loads
 from datetime import datetime
+from torch.nn.functional import one_hot
+from torch import tensor
+from collections import Counter
 
 project_dir = ''
 
@@ -32,12 +34,13 @@ def main(input_filepath, output_filepath):
                            join(data_dir, 'products.jsonl'),
                            join(data_dir, 'deliveries.jsonl'))
 
-    logger.info(f"loaded data, example: \t{data[0]}")
+    logger.info(f"loaded data, example: {data[0]}")
 
     processed_data = []
     # = [[row[1], row[8], row[9], row[10]]
     for row in data:
 
+        # Numerical data:
         date_time_str = row[8]
         date_time_str = date_time_str[:date_time_str.find('.')] # Strip seconds' fragments
         date_time_purchase = datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S')
@@ -49,17 +52,24 @@ def main(input_filepath, output_filepath):
         time_diff = date_time_delivery - date_time_purchase
         diff_h = time_diff.total_seconds() / 3600
 
-        # Take city, weekday, delivery company and delivery time in hours
-        processed_data.append([row[1], date_time_purchase.weekday(), row[10], diff_h])
+        # Take weekday, city, delivery company and delivery time in hours
+        processed_data.append([date_time_purchase.weekday(), row[1], row[10], diff_h])
 
     df = DataFrame.from_records(processed_data)
-    print(df)
 
+    df = df.join(df[1].str.get_dummies()).drop(1, axis=1)
+    df = df.join(df[2].astype(str).str.get_dummies()).drop(2, axis=1)
+    
+    df.rename(columns={0: 'weekday', 3: 'delivery_time'}, inplace=True)
+    df = df[[c for c in df if c != 'delivery_time'] + ['delivery_time']] # Swap column order
 
-    #with open(file=join(project_dir, 'data.csv'), mode='w', encoding='UTF-8', newline='') as file:
-    #    writer = csv.writer(file)
-    #    writer.writerows(data)
+    #print(df)
+    output_dir = join(project_dir, output_filepath, 'data.csv')
 
+    with open(file=output_dir, mode='w', encoding='UTF-8', newline='') as file:
+        file.write(df.to_csv(index=False))
+    
+    logger.info(f"data saved successfully, dir: {output_dir}")
 
 def dummy_sum(a, b):
     """Used exclusively to showcase relative imports in tests. See
