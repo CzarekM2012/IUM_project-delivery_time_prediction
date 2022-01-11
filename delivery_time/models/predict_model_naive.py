@@ -10,12 +10,16 @@ import torch
 
 NUM_CITIES = 7
 NUM_COMPANIES = 3
+WINDOW_SIZE = 32
 working_dir = ''
 
 @click.command()
 @click.argument('model_filepath', type=click.Path(exists=True)) # a file
 @click.argument('input', type=click.STRING)                     # a string containing a single data sample without delivery time, e.g. "4,0,0,1,0,0,0,0,1,0,0"
 def main(model_filepath, input):
+    predict_naive(model_filepath, input)
+
+def predict_naive(model_filepath, input):
     """ Prints an answer predicted by naive model with parameters from (../../models/naive/).
     """
     global working_dir
@@ -40,15 +44,13 @@ def main(model_filepath, input):
     index[2] = row.index(1, index[1]+2) - NUM_CITIES - 1
     #print(index)
     anwser = df.to_numpy()[index[0]][index[1]*3 + index[2]]
-    print(anwser)
-    
-    return anwser
+
+    return max(0, anwser - WINDOW_SIZE/2), anwser + WINDOW_SIZE/2 # Window size is +-24h
 
 
 if __name__ == '__main__':
     #log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     #logging.basicConfig(level=logging.INFO, format=log_fmt)
 
-    # not used in this stub but often useful for finding various files
     working_dir = Path(__file__).resolve().parents[2]
     main()
