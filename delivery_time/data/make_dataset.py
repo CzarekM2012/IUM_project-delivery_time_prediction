@@ -7,6 +7,7 @@ from os.path import join
 from json import loads
 from datetime import datetime
 
+DATA_SPLIT_TRAIN = 0.8
 working_dir = ''
 
 @click.command()
@@ -30,6 +31,8 @@ def main(input_filepath, output_filepath):
                            join(data_dir, 'deliveries.jsonl'))
 
     logger.info(f"loaded data, example: {data[0]}")
+
+    data.sort(key = lambda x: x[8]) # Sort by purchase date to split into sets later
 
     processed_data = []
     # = [[row[1], row[8], row[9], row[10]]
@@ -58,13 +61,23 @@ def main(input_filepath, output_filepath):
     df.rename(columns={0: 'weekday', 3: 'delivery_time'}, inplace=True)
     df = df[[c for c in df if c != 'delivery_time'] + ['delivery_time']] # Swap column order
 
-    #print(df)
-    output_dir = join(working_dir, output_filepath, 'data.csv')
+    all_samples = df.shape[0]
+    train_samples = int(all_samples * DATA_SPLIT_TRAIN)
+    test_samples = all_samples - train_samples
 
+    logger.info(f"splitting data into sets; all: {all_samples}, train: {train_samples}, test: {test_samples}")
+
+    output_dir = join(working_dir, output_filepath, 'train_data.csv')
     with open(file=output_dir, mode='w', encoding='UTF-8', newline='') as file:
-        file.write(df.to_csv(index=False))
+        file.write(df.head(train_samples).to_csv(index=False))
     
-    logger.info(f"data saved successfully, dir: {output_dir}")
+    logger.info(f"train data saved successfully, dir: {output_dir}")
+
+    output_dir = join(working_dir, output_filepath, 'test_data.csv')
+    with open(file=output_dir, mode='w', encoding='UTF-8', newline='') as file:
+        file.write(df.tail(test_samples).to_csv(index=False))
+
+    logger.info(f"test data saved successfully, dir: {output_dir}")
 
 def dummy_sum(a, b):
     """Used exclusively to showcase relative imports in tests. See
