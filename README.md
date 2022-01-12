@@ -33,6 +33,10 @@ Project Organization
     │   │   ├── predict_model.py
     │   │   └── train_model.py
     │   │
+    │   ├── validation     <- Scripts to assess the effectiveness of models: accuracy tests
+    │   │   │                 and A/B tests
+    │   │   └── visualize.py
+    │   │  
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
     │
@@ -40,7 +44,9 @@ Project Organization
     |
     ├── poetry.lock        <- Lockfile which allows complete environment reproduction
     │
-    └── pyproject.toml     <- file with settings and dependencies for the environment
+    ├── pyproject.toml     <- file with settings and dependencies for the environment
+    │
+    └── controllers.py     <- script that starts the endpoint server
 
 
 --------
@@ -56,3 +62,16 @@ Setting up the environment
 5. To run unit tests for your service use `poetry run pytest` or simply `pytest` within `poetry shell`.
 
 <p><small>Project partially based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
+
+Commands:
+-------------
+
+Run endpoint server:
+endpoints --prefix=controllers --host=localhost:8000
+
+Examples to run specific scripts:
+python ./delivery_time/data/make_dataset.py data/raw data/processed
+python ./delivery_time/models/train_model_naive.py data/processed/train_data.csv models/naive/naive_model.csv
+python ./delivery_time/models/predict_model_naive.py models/naive/naive_model.csv "4,0,0,1,0,0,0,0,1,0,0"
+python ./delivery_time/validation/test_acc.py naive data/processed/test_data.csv

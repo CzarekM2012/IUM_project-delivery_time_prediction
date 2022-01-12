@@ -17,7 +17,7 @@ working_dir = ''
 @click.argument('output_filepath', type=click.Path())           # a file
 def main(input_filepath, output_filepath):
     """ Trains a naive model on data from  (../../data/processed/).
-    Model parameters are saved in (../../data/processed).
+    Model parameters are saved in (../../models/naive/).
     """
     global working_dir
 
@@ -51,7 +51,7 @@ def main(input_filepath, output_filepath):
         sum[index[0]][index[1]][index[2]] += row[-1]
     
     model = sum / count
-    #print(model)
+    print(model)
 
     logger.info(f"trained model")
 
@@ -62,10 +62,11 @@ def main(input_filepath, output_filepath):
     
     logger.info(f"model saved successfully, dir: {output_dir}")
 
+    return model
+
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     logging.basicConfig(level=logging.INFO, format=log_fmt)
 
-    # not used in this stub but often useful for finding various files
     working_dir = Path(__file__).resolve().parents[2]
     main()
