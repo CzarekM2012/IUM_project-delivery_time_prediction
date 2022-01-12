@@ -125,8 +125,7 @@ def main(input_filepath, output_filepath):
 
     output_dir = join(working_dir, output_filepath)
 
-    with open(file=output_dir, mode='w', encoding='UTF-8', newline='') as file:
-        file.write(DataFrame(model.flatten(1).numpy()).to_csv(index=False, header=False))
+    torch.save(model.state_dict(), output_dir)
     
     logger.info(f"model saved successfully, dir: {output_dir}")
 
