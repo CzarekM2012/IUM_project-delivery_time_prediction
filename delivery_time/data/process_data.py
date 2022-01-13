@@ -10,6 +10,9 @@ from datetime import datetime
 DATA_SPLIT_TRAIN = 0.8
 working_dir = ''
 
+cities = ["Gdynia", "Kraków", "Poznań", "Radom", "Szczecin", "Warszawa", "Wrocław"]
+deliv_comp = [360, 516, 620]
+
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True)) # a directory
 @click.argument('output_filepath', type=click.Path())           # a directory
@@ -38,6 +41,8 @@ def main(input_filepath, output_filepath):
     # = [[row[1], row[8], row[9], row[10]]
     for row in data:
 
+        sample = process_raw(row[1], row[10], row[8])
+
         # Numerical data:
         date_time_str = row[8]
         date_time_str = date_time_str[:date_time_str.find('.')] # Strip seconds' fragments
@@ -50,16 +55,26 @@ def main(input_filepath, output_filepath):
         time_diff = date_time_delivery - date_time_purchase
         diff_h = time_diff.total_seconds() / 3600
 
+        sample.append(diff_h)
+
         # Take weekday, city, delivery company and delivery time in hours
-        processed_data.append([date_time_purchase.weekday(), row[1], row[10], diff_h])
+        processed_data.append(sample)
+        
+        # Old data processing:
+        #processed_data.append([date_time_purchase.weekday(), row[1], row[10], diff_h])
 
     df = DataFrame.from_records(processed_data)
 
-    df = df.join(df[1].str.get_dummies()).drop(1, axis=1)
-    df = df.join(df[2].astype(str).str.get_dummies()).drop(2, axis=1)
+    #df = df.join(df[1].str.get_dummies()).drop(1, axis=1)
+    #df = df.join(df[2].astype(str).str.get_dummies()).drop(2, axis=1)
     
-    df.rename(columns={0: 'weekday', 3: 'delivery_time'}, inplace=True)
-    df = df[[c for c in df if c != 'delivery_time'] + ['delivery_time']] # Swap column order
+    column_names = ["weekday"]
+    column_names.extend(cities)
+    column_names.extend(deliv_comp)
+    column_names.append("delivery_time")
+
+    df.columns=column_names
+    #df = df[[c for c in df if c != 'delivery_time'] + ['delivery_time']] # Swap column order
 
     all_samples = df.shape[0]
     train_samples = int(all_samples * DATA_SPLIT_TRAIN)
@@ -78,6 +93,39 @@ def main(input_filepath, output_filepath):
         file.write(df.tail(test_samples).to_csv(index=False))
 
     logger.info(f"test data saved successfully, dir: {output_dir}")
+
+
+def get_num_cities():
+    return len(cities)
+
+def get_num_deliv():
+    return len(deliv_comp)
+
+def process_raw(city, delivery_company, purchase_timestamp):
+    sample = []
+
+    date_time = datetime.strptime(purchase_timestamp, '%Y-%m-%dT%H:%M:%S')
+    sample.append(date_time.weekday())
+
+    city_index = cities.index(city)
+    deliv_comp_index = deliv_comp.index(delivery_company)
+
+    for i in range(get_num_cities()):
+        if i == city_index:
+            sample.append(1)
+        else:
+            sample.append(0)
+
+    for i in range(get_num_deliv()):
+        if i == deliv_comp_index:
+            sample.append(1)
+        else:
+            sample.append(0)    
+
+    return sample
+
+def get_data_string_from_raw(city, delivery_company, purchase_timestamp):
+    return str(process_raw(city, delivery_company, purchase_timestamp))[1:-1]
 
 def dummy_sum(a, b):
     """Used exclusively to showcase relative imports in tests. See

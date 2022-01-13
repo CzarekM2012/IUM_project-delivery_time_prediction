@@ -8,8 +8,10 @@ from os.path import join
 import pandas
 import torch
 
-NUM_CITIES = 7
-NUM_COMPANIES = 3
+from delivery_time.data.process_data import get_num_cities, get_num_deliv
+
+NUM_CITIES = get_num_cities()
+NUM_COMPANIES = get_num_deliv()
 working_dir = ''
 
 @click.command()

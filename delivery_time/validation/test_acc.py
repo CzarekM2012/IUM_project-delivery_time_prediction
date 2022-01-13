@@ -9,8 +9,6 @@ import torch
 import requests
 import json
 
-NUM_CITIES = 7
-NUM_COMPANIES = 3
 SERVER_ADDRESS = "127.0.0.1:8000"
 working_dir = ''
 

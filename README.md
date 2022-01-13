@@ -65,8 +65,14 @@ Run endpoint server:
 `endpoints --prefix=controllers --host=localhost:8000`
 
 Examples to run specific scripts:
-`python ./delivery_time/data/make_dataset.py data/raw data/processed`
+`python ./delivery_time/data/process_data.py data/raw data/processed`
+
 `python ./delivery_time/models/train_model_naive.py data/processed/train_data.csv models/naive/naive_model.csv`
+`python ./delivery_time/models/train_model_regressor.py data/processed/train_data.csv models/regressor/regressor_model.pt`
+
 `python ./delivery_time/models/predict_model_naive.py models/naive/naive_model.csv "4,0,0,1,0,0,0,0,1,0,0"`
+`python ./delivery_time/models/predict_model_regressor.py models/regressor/regressor_model.pt "4,0,0,1,0,0,0,0,1,0,0"`
+
 `python ./delivery_time/validation/test_acc.py naive data/processed/test_data.csv`
+`python ./delivery_time/validation/test_acc.py regressor data/processed/test_data.csv`
 

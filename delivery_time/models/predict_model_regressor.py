@@ -9,12 +9,12 @@ import pandas
 import torch
 
 from delivery_time.models.train_model_regressor import DeliveryTimeframeRegressor
+from delivery_time.data.process_data import get_num_cities, get_num_deliv
 from torch.nn.functional import one_hot
 from torch import Tensor
 
-NUM_CITIES = 7
-NUM_COMPANIES = 3
-WINDOW_SIZE = 32
+NUM_CITIES = get_num_cities()
+NUM_COMPANIES = get_num_deliv()
 working_dir = ''
 
 @click.command()
@@ -51,7 +51,7 @@ def predict_regressor(model_filepath, input):
     prediction = model(weekdays, destinations, transporters) 
     prediction = prediction.detach()[0].tolist()
 
-    return prediction
+    return prediction[0], prediction[1]
 
 
 if __name__ == '__main__':
