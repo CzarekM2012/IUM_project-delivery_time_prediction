@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __init__ import NUM_CITIES, NUM_COMPANIES
 import click
 #import logging
 from pandas import DataFrame
@@ -9,12 +10,9 @@ import pandas
 import torch
 
 from delivery_time.models.train_model_regressor import DeliveryTimeframeRegressor
-from delivery_time.data.process_data import get_num_cities, get_num_deliv
 from torch.nn.functional import one_hot
 from torch import Tensor
 
-NUM_CITIES = get_num_cities()
-NUM_COMPANIES = get_num_deliv()
 working_dir = ''
 
 @click.command()
