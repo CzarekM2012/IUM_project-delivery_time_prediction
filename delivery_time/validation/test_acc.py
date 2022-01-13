@@ -1,23 +1,20 @@
 # -*- coding: utf-8 -*-
 import click
 import logging
-from pandas import DataFrame
 from pathlib import Path
 from os.path import join
 import pandas
-import torch
 import requests
 import json
 
-SERVER_ADDRESS = "127.0.0.1:8000"
 working_dir = ''
 
 @click.command()
 @click.argument('endpoint_address', type=click.STRING) # URL of specific endpoint, e.g. http://127.0.0.1:8000/naive
 @click.argument('test_data_filepath', type=click.Path(exists=True)) # a file
 def main(endpoint_address, test_data_filepath):
-    """ Runs the script in (../models/).
-    Model parameters are saved in (../../models/naive/).
+    """ Sends on data from (../../data/processed/) to an endpoint
+    and calculates accuracy based on labels in the data and received predictions
     """
     global working_dir
 
@@ -38,7 +35,7 @@ def main(endpoint_address, test_data_filepath):
     window_size_sum = 0.0
     for index, row in df.iterrows():
         goal = row[-1]
-        #pred = system("python ./delivery_time/models/predict_model_naive.py models/naive/naive_model.csv '{row}'")
+        
         preds = get_pred(endpoint_address, row)
 
         if preds[0] > preds[1]:
