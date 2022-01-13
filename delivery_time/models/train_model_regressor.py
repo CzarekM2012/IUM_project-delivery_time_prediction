@@ -21,13 +21,13 @@ BATCH_SIZE = 32
 EPOCHS_NUM = 60
 
 SEED = 42
+device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
 class DeliveryTimeframeRegressor(nn.Module):
     WEEKDAYS_COUNT = 7
 
     def __init__(self, cities_count, transporters_count):
         super().__init__()
-        # Initialize the modules we need to build the network
         self.purchase_weekday_embed = nn.Linear(self.WEEKDAYS_COUNT, self.WEEKDAYS_COUNT)
         self.destination_city_embed = nn.Linear(cities_count, cities_count)
         self.transporter_embed = nn.Linear(transporters_count, transporters_count)
@@ -47,13 +47,14 @@ class DeliveryTimeframeRegressor(nn.Module):
         x = self.relu(x)
         return x
 
-def loss_function(predicted_timeframes, delivery_times, accuracy_weight=1, timeframe_width_weight=0.5, edges_logical_correctness_weight=10):
+def loss_function(predicted_timeframes, delivery_times, timeframe_beginning_shift=16, timeframe_end_shift=16):
     low = predicted_timeframes[:, 0]
     high = predicted_timeframes[:, 1]
-    middle = (low + high)/2 # low + (high-low)/2
-    return torch.mean(accuracy_weight * torch.pow(middle - delivery_times, 2) +
-                      timeframe_width_weight * torch.pow(high - low, 2) -
-                      edges_logical_correctness_weight * (high - low))
+    low_target = delivery_times - timeframe_beginning_shift
+    low_target_limit = torch.Tensor([0] * low_target.shape[0]).to(device)
+    low_target = torch.maximum(low_target, low_target_limit)
+    high_target = delivery_times + timeframe_end_shift
+    return torch.mean(torch.pow(low - low_target, 2) + torch.pow(high - high_target, 2))
 
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True)) # a file
@@ -63,7 +64,6 @@ def main(input_filepath, output_filepath):
     Model parameters are saved in (../../data/processed).
     """
     global working_dir
-    device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
     logger = logging.getLogger(__name__)
     logger.info('training regressor model')
@@ -100,7 +100,7 @@ def main(input_filepath, output_filepath):
 
             output = model(weekdays, destinations, transporters)
       
-            loss = loss_fun(output, values, 40, 0.75, 60)
+            loss = loss_fun(output, values)
             loss.backward()
             optimizer.step()
     
