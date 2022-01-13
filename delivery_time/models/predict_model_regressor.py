@@ -8,7 +8,7 @@ from os.path import join
 import pandas
 import torch
 
-from train_model_regressor import DeliveryTimeframeRegressor
+from delivery_time.models.train_model_regressor import DeliveryTimeframeRegressor
 from torch.nn.functional import one_hot
 from torch import Tensor
 
@@ -21,10 +21,11 @@ working_dir = ''
 @click.argument('model_filepath', type=click.Path(exists=True)) # a file
 @click.argument('input', type=click.STRING)                     # a string containing a single data sample without delivery time, e.g. "4,0,0,1,0,0,0,0,1,0,0"
 def main(model_filepath, input):
-    predict_regressor(model_filepath, input)
+    result = predict_regressor(model_filepath, input)
+    print(result)
 
 def predict_regressor(model_filepath, input):
-    """ Prints an answer predicted by naive model with parameters from (../../models/naive/).
+    """ Prints an answer predicted by regression model with parameters from (../../models/regressor/).
     """
     global working_dir
 

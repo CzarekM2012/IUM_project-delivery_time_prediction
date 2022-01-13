@@ -17,7 +17,8 @@ working_dir = ''
 @click.argument('model_filepath', type=click.Path(exists=True)) # a file
 @click.argument('input', type=click.STRING)                     # a string containing a single data sample without delivery time, e.g. "4,0,0,1,0,0,0,0,1,0,0"
 def main(model_filepath, input):
-    predict_naive(model_filepath, input)
+    result = predict_naive(model_filepath, input)
+    print(result)
 
 def predict_naive(model_filepath, input):
     """ Prints an answer predicted by naive model with parameters from (../../models/naive/).

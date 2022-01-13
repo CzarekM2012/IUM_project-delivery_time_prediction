@@ -23,23 +23,17 @@ Project Organization
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
+    │   │   
     │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
+    │   │   
     │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
+    │   │                     predictions
+    │   │   
     │   ├── validation     <- Scripts to assess the effectiveness of models: accuracy tests
-    │   │   │                 and A/B tests
-    │   │   └── visualize.py
-    │   │  
+    │   │                     and A/B tests
+    │   │   
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
+    │      
     ├── tests              <- Unit tests
     |
     ├── poetry.lock        <- Lockfile which allows complete environment reproduction
@@ -68,10 +62,11 @@ Commands:
 -------------
 
 Run endpoint server:
-endpoints --prefix=controllers --host=localhost:8000
+`endpoints --prefix=controllers --host=localhost:8000`
 
 Examples to run specific scripts:
-python ./delivery_time/data/make_dataset.py data/raw data/processed
-python ./delivery_time/models/train_model_naive.py data/processed/train_data.csv models/naive/naive_model.csv
-python ./delivery_time/models/predict_model_naive.py models/naive/naive_model.csv "4,0,0,1,0,0,0,0,1,0,0"
-python ./delivery_time/validation/test_acc.py naive data/processed/test_data.csv
+`python ./delivery_time/data/make_dataset.py data/raw data/processed`
+`python ./delivery_time/models/train_model_naive.py data/processed/train_data.csv models/naive/naive_model.csv`
+`python ./delivery_time/models/predict_model_naive.py models/naive/naive_model.csv "4,0,0,1,0,0,0,0,1,0,0"`
+`python ./delivery_time/validation/test_acc.py naive data/processed/test_data.csv`
+
