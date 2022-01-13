@@ -5,6 +5,7 @@ from delivery_time.models.predict_model_regressor import predict_regressor
 from delivery_time.data.process_data import get_data_string_from_raw
 import json
 import random
+import logging
 
 MODEL_PATH_NAIVE = "models/naive/naive_model.csv"
 MODEL_PATH_REGRESSOR = "models/regressor/regressor_model.pt"
@@ -15,6 +16,19 @@ MODEL_A = predict_naive
 MODEL_B = predict_regressor
 MODEL_PATH_A = MODEL_PATH_NAIVE
 MODEL_PATH_B = MODEL_PATH_REGRESSOR
+
+logger = logging.getLogger('server_logger')
+logger.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler('server.log')
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+logger.info('request server started')
 
 class Default(Controller):
     def GET(self):
@@ -28,6 +42,7 @@ class Default(Controller):
 
     @param('user_id', default=None, help="Just for A/B tests")
     def POST(self, **kwargs):
+        global logger
         sample = get_data_string_from_raw(kwargs['city'], kwargs['delivery_company'], kwargs['purchase_timestamp'])
         user_id = kwargs['user_id']
 
@@ -45,6 +60,9 @@ class Default(Controller):
                 model_path = MODEL_PATH_B
 
         results = model(model_path, sample)
+
+        logger.info(f'main endpoint prediction: user_id: {user_id}, data: {sample}, prediction:{results}')
+
         response = {
             "pred_time_from" : results[0],
             "pred_time_to" : results[1]
@@ -66,6 +84,9 @@ class Naive(Controller):
     def POST(self, **kwargs):
         sample = kwargs['sample']
         results = predict_naive(MODEL_PATH_NAIVE, sample)
+
+        logger.info(f'naive endpoint prediction: data: {sample}, prediction:{results}')
+
         response = {
             "pred_time_from" : results[0],
             "pred_time_to" : results[1]
@@ -83,6 +104,9 @@ class Regressor(Controller):
     def POST(self, **kwargs):
         sample = kwargs['sample']
         results = predict_regressor(MODEL_PATH_REGRESSOR, sample)
+        
+        logger.info(f'regressor endpoint prediction: data: {sample}, prediction:{results}')
+
         response = {
             "pred_time_from" : results[0],
             "pred_time_to" : results[1]
