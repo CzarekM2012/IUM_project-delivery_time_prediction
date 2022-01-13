@@ -13,16 +13,16 @@ SERVER_ADDRESS = "127.0.0.1:8000"
 working_dir = ''
 
 @click.command()
-@click.argument('model_type', type=click.STRING) # location of the endpoint, either "naive" or "regressor"
+@click.argument('endpoint_address', type=click.STRING) # URL of specific endpoint, e.g. http://127.0.0.1:8000/naive
 @click.argument('test_data_filepath', type=click.Path(exists=True)) # a file
-def main(model_type, test_data_filepath):
+def main(endpoint_address, test_data_filepath):
     """ Runs the script in (../models/).
     Model parameters are saved in (../../models/naive/).
     """
     global working_dir
 
     logger = logging.getLogger(__name__)
-    logger.info(f'testing {model_type} model accuracy')
+    logger.info(f'testing model at {endpoint_address} for accuracy')
 
     data_dir = join(working_dir, test_data_filepath)
     #print(data_dir)
@@ -39,7 +39,7 @@ def main(model_type, test_data_filepath):
     for index, row in df.iterrows():
         goal = row[-1]
         #pred = system("python ./delivery_time/models/predict_model_naive.py models/naive/naive_model.csv '{row}'")
-        preds = get_pred(model_type, row)
+        preds = get_pred(endpoint_address, row)
 
         if preds[0] > preds[1]:
             raise Exception("Predicted time window has negative size")
@@ -53,7 +53,7 @@ def main(model_type, test_data_filepath):
     accuracy = acc_sum / row_count
     window_size_avg = window_size_sum / row_count
 
-    logger.info(f"{model_type} model accuracy: {accuracy}, average window size: {window_size_avg}")
+    logger.info(f"model at {endpoint_address} achieved accuracy of {accuracy} with average window size {window_size_avg}h")
 
 def get_pred(endpoint, data):
     data_list = data.to_list()[:-1] # Last data point is the expected result
@@ -64,7 +64,7 @@ def get_pred(endpoint, data):
     data_str = str(data_list)
     data_str = data_str[1:-1]
     data_str = data_str.replace(" ", "")
-    response = requests.post("http://" + SERVER_ADDRESS + "/" + endpoint, json={"sample": data_str})
+    response = requests.post(endpoint, json={"sample": data_str})
     results = json.loads(response.json())
     return results["pred_time_from"], results["pred_time_to"]
 

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __init__ import NUM_CITIES, NUM_COMPANIES
 import click
 #import logging
 from pandas import DataFrame
@@ -8,6 +7,11 @@ from os.path import join
 
 import pandas
 import torch
+
+from delivery_time.data.process_data import get_num_deliv, get_num_cities
+
+NUM_CITIES = get_num_cities()
+NUM_COMPANIES = get_num_deliv()
 
 WINDOW_SIZE = 32
 working_dir = ''

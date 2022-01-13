@@ -22,9 +22,7 @@ Project Organization
     ├── delivery_time      <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
     │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   
-    │   ├── features       <- Scripts to turn raw data into features for modeling
+    │   ├── data           <- Scripts to extract and process data
     │   │   
     │   ├── models         <- Scripts to train models and then use trained models to make
     │   │                     predictions
@@ -64,6 +62,14 @@ Commands:
 Run endpoint server:
 `endpoints --prefix=controllers --host=localhost:8000`
 
+Send a request for prediction:
+`curl 127.0.0.1:8000/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23"`
+`curl 127.0.0.1:8000/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23" -d "user_id=105"`
+
+Direct requests to a specific model use processed data:
+`curl 127.0.0.1:8000/naive/ -d "sample=4,0,0,1,0,0,0,0,1,0,0"`
+`curl 127.0.0.1:8000/regressor/ -d "sample=4,0,0,1,0,0,0,0,1,0,0"`
+
 Examples to run specific scripts:
 `python ./delivery_time/data/process_data.py data/raw data/processed`
 
@@ -73,6 +79,5 @@ Examples to run specific scripts:
 `python ./delivery_time/models/predict_model_naive.py models/naive/naive_model.csv "4,0,0,1,0,0,0,0,1,0,0"`
 `python ./delivery_time/models/predict_model_regressor.py models/regressor/regressor_model.pt "4,0,0,1,0,0,0,0,1,0,0"`
 
-`python ./delivery_time/validation/test_acc.py naive data/processed/test_data.csv`
-`python ./delivery_time/validation/test_acc.py regressor data/processed/test_data.csv`
-
+`python ./delivery_time/validation/test_acc.py http://127.0.0.1:8000/naive data/processed/test_data.csv`
+`python ./delivery_time/validation/test_acc.py http://127.0.0.1:8000/regressor data/processed/test_data.csv`

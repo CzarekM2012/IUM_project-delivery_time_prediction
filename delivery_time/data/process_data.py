@@ -125,6 +125,10 @@ def process_raw(city, delivery_company, purchase_timestamp):
     return sample
 
 def get_data_string_from_raw(city, delivery_company, purchase_timestamp):
+    if type(delivery_company) != int:
+        delivery_company = int(delivery_company)
+    print(type(delivery_company))
+    
     return str(process_raw(city, delivery_company, purchase_timestamp))[1:-1]
 
 def dummy_sum(a, b):
