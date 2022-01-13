@@ -22,22 +22,6 @@ EPOCHS_NUM = 60
 
 SEED = 42
 
-import os
-os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-os.environ['PYTHONHASHSEED'] = str(SEED)
-
-import random
-random.seed(SEED)
-
-if torch.cuda.is_available(): 
-    torch.cuda.manual_seed(SEED)
-    torch.cuda.manual_seed_all(SEED)
-
-torch.manual_seed(SEED)
-torch.backends.cudnn.determinstic = True
-torch.backends.cudnn.benchmark = False
-torch.use_deterministic_algorithms(True)
-
 class DeliveryTimeframeRegressor(nn.Module):
     WEEKDAYS_COUNT = 7
 
