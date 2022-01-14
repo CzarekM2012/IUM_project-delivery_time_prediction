@@ -53,7 +53,6 @@ def main(input_filepath, output_filepath):
         sum[index[0]][index[1]][index[2]] += row[-1]
     
     model = sum / count
-    print(model)
 
     logger.info(f"trained model")
 

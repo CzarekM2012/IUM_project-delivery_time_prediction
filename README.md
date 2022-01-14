@@ -78,7 +78,7 @@ Data in the request can be changed, but the app only returns predictions for val
 
 Server has to be restarted after any script modification for it to take effect.
 
-Predictions can be also obtained from a specific model by sending a request at its own endpoint, e.g. `localhost:8000/naive` for naive model. However, requests sent this way have to contain processed data, e.g.: `sample=4,0,0,1,0,0,0,0,1,0,0`
+Predictions can be also obtained from a specific model by sending a request at its own endpoint, e.g. `localhost:8000/naive` for naive model.
 
 Accuracy of both models can be tested with `test_acc.py` script, located in `delivery_time/validation`. Example command:
 `python ./delivery_time/validation/test_acc.py http://127.0.0.1:8000/naive data/processed/test_data.csv`
@@ -97,8 +97,10 @@ Send a request for prediction:
 `curl 127.0.0.1:8000/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23" -d "user_id=105"`
 
 Direct requests to a specific model use processed data:
-`curl 127.0.0.1:8000/naive/ -d "sample=4,0,0,1,0,0,0,0,1,0,0"`
-`curl 127.0.0.1:8000/regressor/ -d "sample=4,0,0,1,0,0,0,0,1,0,0"`
+`curl 127.0.0.1:8000/naive/ -d "sample=4,0,0,0,0,0,1,0,1,0,0"`
+`curl 127.0.0.1:8000/naive/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-06-04T19:39:23"`
+`curl 127.0.0.1:8000/regressor/ -d "sample=4,0,0,0,0,0,1,0,1,0,0"`
+`curl 127.0.0.1:8000/regressor/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-06-04T19:39:23"`
 
 Examples to run specific scripts:
 `python ./delivery_time/data/process_data.py data/raw data/processed`
