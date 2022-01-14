@@ -75,7 +75,7 @@ The process re-generates process data and models from raw data included in proje
 
 Data in the request can be changed, but the app only returns predictions for valid cities and delivery companies. User id can also be proviced, e.g. `-d "user_id=105"` with `curl`, to identify the user for A/B tests. If A/B tests are toggled on (`AB_TESTS = True` at the start of `controllers.py`), requests are split between both models (setting `TEST_SPLIT_A` changes amount of data going to the first, naive, model). By default, split is set to `0.5`. Requests are split based on user id hash, so that a single user always gets predictions from a certain model. Results can be gathered later from `server.log`, where server app stores its predictions.
 
-Predictions can be also obtained from a specific model by sending a request at its own endpoint, e.g. `localhost:8000/naive` for naive model. However, requests sent this way have to contain processed data, e.g.: `sample=4,0,0,1,0,0,0,0,1,0,0`
+Predictions can be also obtained from a specific model by sending a request at its own endpoint, e.g. `localhost:8000/naive` for naive model.
 
 Accuracy of both models can be tested with `test_acc.py` script, located in `delivery_time/validation`. Example command:
 `python ./delivery_time/validation/test_acc.py http://127.0.0.1:8000/naive data/processed/test_data.csv`
@@ -94,8 +94,10 @@ Send a request for prediction:
 `curl 127.0.0.1:8000/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23" -d "user_id=105"`
 
 Direct requests to a specific model use processed data:
-`curl 127.0.0.1:8000/naive/ -d "sample=4,0,0,1,0,0,0,0,1,0,0"`
-`curl 127.0.0.1:8000/regressor/ -d "sample=4,0,0,1,0,0,0,0,1,0,0"`
+`curl 127.0.0.1:8000/naive/ -d "sample=4,0,0,0,0,0,1,0,1,0,0"`
+`curl 127.0.0.1:8000/naive/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-06-04T19:39:23"`
+`curl 127.0.0.1:8000/regressor/ -d "sample=4,0,0,0,0,0,1,0,1,0,0"`
+`curl 127.0.0.1:8000/regressor/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-06-04T19:39:23"`
 
 Examples to run specific scripts:
 `python ./delivery_time/data/process_data.py data/raw data/processed`
