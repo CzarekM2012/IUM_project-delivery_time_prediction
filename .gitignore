@@ -75,9 +75,8 @@ target/
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
 
-# Include raw data for convenience, because it's small and immutable
+# Include all data for convenience, because it's small. Raw data is immutable and processed is generated after it
 #/data/
-/data/processed
 
 
 # Mac OS-specific storage files

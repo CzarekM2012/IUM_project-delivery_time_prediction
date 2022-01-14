@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "delivery_time"
-version = "0.0.1"
+version = "0.1.0"
 description = ""
 authors = ["Aleksander Garlikowski <aleksander.garlikowski.stud@pw.edu.pl>", "Cezary Moczulski <cezary.moczulski.stud@pw.edu.pl>"]
 

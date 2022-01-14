@@ -13,7 +13,7 @@ informację klientom."
 The project consists of:
 - a naive model
 - an ML regressor
-- dedicated training and prediction making scripts
+- dedicated training and prediction-making scripts
 - data processing scripts
 - a microservice-based application that servers predictions and enables A/B testing
 
@@ -71,9 +71,12 @@ The process re-generates process data and models from raw data included in proje
 3. Run `python ./delivery_time/models/train_model_naive.py data/processed/train_data.csv models/naive/naive_model.csv` to train naive model
 4. Run `python ./delivery_time/models/train_model_regressor.py data/processed/train_data.csv models/regressor/regressor_model.pt` to train the regressor
 5. Run `endpoints --prefix=controllers --host=localhost:8000`. This will start the server app. To run on specific address, replace `localhost:8000` with another address.
-6. Now the app is running. Test it by sending a request with data at server address (here: `localhost:8000/`). Example request: `curl 127.0.0.1:8000/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23"`
+6. Now the app is running. Test it by sending a request with data at server address (here: `localhost:8000/`). Example request using curl: `curl 127.0.0.1:8000/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23"`
+To use curl in Windows shell, remember to remove its alias using `Remove-item alias:curl`. Otherwise Windows uses another script in its place, that has different syntax. If you don't want to modify your shell, you can always do the same in `poetry shell`.
 
-Data in the request can be changed, but the app only returns predictions for valid cities and delivery companies. User id can also be proviced, e.g. `-d "user_id=105"` with `curl`, to identify the user for A/B tests. If A/B tests are toggled on (`AB_TESTS = True` at the start of `controllers.py`), requests are split between both models (setting `TEST_SPLIT_A` changes amount of data going to the first, naive, model). By default, split is set to `0.5`. Requests are split based on user id hash, so that a single user always gets predictions from a certain model. Results can be gathered later from `server.log`, where server app stores its predictions.
+Data in the request can be changed, but the app only returns predictions for valid cities and delivery companies. User id can also be provided, e.g. `-d "user_id=105"` with `curl`, to identify the user for A/B tests. If A/B tests are toggled on (`AB_TESTS = True` at the start of `controllers.py`), requests are split between both models (setting `TEST_SPLIT_A` changes amount of data going to the first, naive, model). By default, split is set to `0.5`. Requests are split based on user id hash, so that a single user always gets predictions from a certain model. Results can be gathered later from `server.log`, where server app stores its predictions.
+
+Server has to be restarted after any script modification for it to take effect.
 
 Predictions can be also obtained from a specific model by sending a request at its own endpoint, e.g. `localhost:8000/naive` for naive model. However, requests sent this way have to contain processed data, e.g.: `sample=4,0,0,1,0,0,0,0,1,0,0`
 
@@ -81,7 +84,7 @@ Accuracy of both models can be tested with `test_acc.py` script, located in `del
 `python ./delivery_time/validation/test_acc.py http://127.0.0.1:8000/naive data/processed/test_data.csv`
 
 Finally, a traffic simulation can be made using `simulate_traffic.py` from `delivery_time/validation`. Example command:
-`python delivery_time/validation/simulate_traffic.py 10 0.001 100`, with parameters: simulation duration, base delay (multiplied randomly by up to 10) and user count.
+`python delivery_time/validation/simulate_traffic.py http://127.0.0.1:8000/ 10 0.001 100`, with parameters: address, simulation duration, base delay (multiplied randomly by up to 10) and user count.
 
 Commands:
 -------------
@@ -110,5 +113,5 @@ Examples to run specific scripts:
 `python ./delivery_time/validation/test_acc.py http://127.0.0.1:8000/regressor data/processed/test_data.csv`
 
 `python delivery_time/validation/simulate_traffic.py`
-`python delivery_time/validation/simulate_traffic.py 10 0.001 100`
+`python delivery_time/validation/simulate_traffic.py http://127.0.0.1:8000/ 10 0.001 100`
 
