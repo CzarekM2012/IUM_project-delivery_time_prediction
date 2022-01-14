@@ -78,8 +78,8 @@ class Naive(Controller):
         return """
         This is naive model's endpoint
         send a POST request with a data 'sample', e.g.:
-        curl 127.0.0.1:8000/naive/ -d "sample=4,0,0,1,0,0,0,0,1,0,0" or
-        curl 127.0.0.1:8000/naive/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23"
+        curl 127.0.0.1:8000/naive/ -d "sample=4,0,0,0,0,0,1,0,1,0,0" or
+        curl 127.0.0.1:8000/naive/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-06-04T19:39:23"
         to get a prediction for given data sample
         """
     def POST(self, **kwargs):
@@ -102,8 +102,8 @@ class Regressor(Controller):
         return """
         This is regression model's endpoint
         send a POST request with a data 'sample', e.g.:
-        curl 127.0.0.1:8000/regressor/ -d "sample=4,0,0,1,0,0,0,0,1,0,0" or
-        curl 127.0.0.1:8000/regressor/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-05-31T19:39:23"
+        curl 127.0.0.1:8000/regressor/ -d "sample=4,0,0,0,0,0,1,0,1,0,0" or
+        curl 127.0.0.1:8000/regressor/ -d "city=Warszawa" -d "delivery_company=360" -d "purchase_timestamp=2021-06-04T19:39:23"
         to get a prediction for given data sample
         """
     def POST(self, **kwargs):
